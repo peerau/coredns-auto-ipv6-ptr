@@ -18,10 +18,9 @@ const AUTOIPV6PTR_PLUGIN_NAME string = "autoipv6ptr"
 
 type AutoIPv6PTR struct {
 	Next plugin.Handler
-
 	TTL uint32
-
 	Suffix string
+	Prefix string
 }
 
 // ServeDNS implements the plugin.Handler interface.
@@ -48,7 +47,7 @@ func (v6ptr AutoIPv6PTR) ServeDNS(ctx context.Context, writer dns.ResponseWriter
 		responsePtrValue := request.Question[0].Name
 		responsePtrValue = RemoveIP6DotArpa(responsePtrValue)
 		responsePtrValue = RemoveDots(responsePtrValue)
-		responsePtrValue = ReverseString(responsePtrValue)
+		responsePtrValue = v6ptr.Prefix + ReverseString(responsePtrValue)
 		responsePtrValue += "." + v6ptr.Suffix + "."
 
 		message := new(dns.Msg)
@@ -98,6 +97,15 @@ func setup(c *caddy.Controller) error {
 				return plugin.Error(AUTOIPV6PTR_PLUGIN_NAME, errors.New("Suffix can't be empty"))
 			} else {
 				v6ptr.Suffix = suffix
+			}
+			
+		case "prefix":
+			prefix := c.RemainingArgs()[0]
+
+			if len(prefix) == 0 {
+				v6ptr.Prefix = ""
+			} else {
+				v6ptr.Prefix = prefix
 			}
 
 		case "ttl":
