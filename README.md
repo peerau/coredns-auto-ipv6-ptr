@@ -2,6 +2,13 @@
 
 Some services require that RDNS requests resolve to PTR records. With this CoreDNS plugin, you can generate these PTR records on the fly based on the requested IPv6 address. The plugin translates the requested address and appends a suffix.
 
+## Installation
+
+add the following to coredns/plugin.cfg:
+```
+autoipv6ptr:github.com/peerau/coredns-auto-ipv6-ptr
+```
+
 ## Translation process
 
 Let's say the plugin receives a PTR request for `4.4.b.d.b.4.e.f.f.f.0.0.4.5.0.5.2.0.0.b.0.0.3.0.8.b.d.0.1.0.0.2.ip6.arpa.`. If there is a preset found the preset value will be used in the anwer. If there is none the regular translation process starts:
